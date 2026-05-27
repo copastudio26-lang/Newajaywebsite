@@ -1,9 +1,8 @@
-// --- MALHAR MOBILE SHOP CORE LOGIC (WEB3FORMS REAL OTP SYSTEM) ---
+// --- MALHAR MOBILE SHOP AND ELECTRONIC CORE LOGIC GATEWAY ---
 
-// 🔑 Free Web3Forms Token Key Integrated Successfully
 const WEB3FORMS_ACCESS_KEY = "f9e40d87-2638-482c-8b43-3444d8fc825d";
 
-// 1. SPLASH SCREEN TO AUTH SCREEN TRANSITION & SESSION CHECK
+// 1. DESIRED RUNTIME STATE INITIALIZATION & SESSION ANALYSIS
 window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         const splash = document.getElementById('splash-screen');
@@ -18,22 +17,8 @@ window.addEventListener('DOMContentLoaded', () => {
             
             if (activeRole === 'admin' || activeRole === 'customer') {
                 if(dashboard) dashboard.classList.remove('hidden');
-                if (activeRole === 'admin') {
-                    document.querySelector('.nav-links').innerHTML = `
-                        <li onclick="loadSection('admin_orders')" class="active-nav"><i class="fas fa-list-alt"></i> All Customer Orders</li>
-                        <li onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</li>
-                    `;
-                    loadSection('admin_orders');
-                } else {
-                    document.querySelector('.nav-links').innerHTML = `
-                        <li onclick="loadSection('home')" class="active-nav"><i class="fas fa-home"></i> Home</li>
-                        <li onclick="loadSection('mobiles')"><i class="fas fa-mobile-alt"></i> Order Mobiles</li>
-                        <li onclick="loadSection('profile')"><i class="fas fa-user"></i> My Profile</li>
-                        <li onclick="loadSection('about')"><i class="fas fa-info-circle"></i> About Shop</li>
-                        <li onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</li>
-                    `;
-                    loadSection('home');
-                }
+                setupNavigationLinks(activeRole);
+                loadSection(activeRole === 'admin' ? 'admin_orders' : 'home');
             } else {
                 if(auth) auth.classList.remove('hidden');
             }
@@ -41,7 +26,27 @@ window.addEventListener('DOMContentLoaded', () => {
     }, 3500);
 });
 
-// 2. TOGGLE BETWEEN LOGIN & SIGNUP FORMS
+// Dynamic Sidebar Links Deployment Engine
+function setupNavigationLinks(role) {
+    const navLinks = document.querySelector('.nav-links');
+    if(!navLinks) return;
+    
+    if (role === 'admin') {
+        navLinks.innerHTML = `
+            <li onclick="loadSection('admin_orders')" class="active-nav"><i class="fas fa-list-alt"></i> Live Customer Bookings</li>
+            <li onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</li>
+        `;
+    } else {
+        navLinks.innerHTML = `
+            <li onclick="loadSection('home')" class="active-nav"><i class="fas fa-home"></i> Home & Services</li>
+            <li onclick="loadSection('mobiles')"><i class="fas fa-mobile-alt"></i> Order Mobiles</li>
+            <li onclick="loadSection('profile')"><i class="fas fa-clock"></i> My Bookings Track</li>
+            <li onclick="loadSection('about')"><i class="fas fa-info-circle"></i> About Shop</li>
+            <li onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</li>
+        `;
+    }
+}
+
 function switchAuthMode(mode) {
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
@@ -66,17 +71,16 @@ function switchAuthMode(mode) {
     }
 }
 
-// Global scope tracker variables for access code validation
 let generatedSignupOTP = null;
 let generatedLoginOTP = null;
 
-// 3. SECURE SIGNUP OTP ACTION (Web3Forms)
+// 2. WEB3FORMS SYSTEM OTP DISPATCH (FREE LIFETIME CHANNELS)
 function sendOTP() {
     const contact = document.getElementById('reg-contact').value;
     const otpBtn = document.getElementById('send-otp-btn');
     
     if (!contact || !contact.includes('@')) {
-        alert("⚠️ Please enter a valid Email Address to receive the OTP!");
+        alert("⚠️ Please enter a valid Email Address!");
         return;
     }
 
@@ -85,33 +89,22 @@ function sendOTP() {
 
     const formData = new FormData();
     formData.append("access_key", WEB3FORMS_ACCESS_KEY);
-    formData.append("subject", "🛡️ MALHAR SHOP - Registration Verification OTP");
+    formData.append("subject", "🛡️ MALHAR SHOP - Registration Verification Code");
     formData.append("from_name", "Malhar Shop Gateway");
     formData.append("email", contact);
-    formData.append("message", `Welcome to Malhar Mobile & Electronic Shop.\n\nYour 4-Digit Security Registration OTP is: ${generatedSignupOTP}\n\nPlease verify this to finalize registration setup.`);
+    formData.append("message", `Welcome to Malhar Mobile & Electronic Shop.\n\nYour 4-Digit Registration Security OTP is: ${generatedSignupOTP}`);
 
-    fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        body: formData
-    })
-    .then(response => response.json())
+    fetch("https://api.web3forms.com/submit", { method: "POST", body: formData })
+    .then(res => res.json())
     .then(data => {
         if(data.success) {
-            alert(`📩 Verification OTP Sent Successfully to ${contact}! Please check your email inbox.`);
+            alert(`📩 Registration code successfully sent to ${contact}! Check your inbox.`);
             document.getElementById('otp-input-field').classList.remove('hidden');
             if(otpBtn) { otpBtn.innerText = "RESEND OTP"; otpBtn.disabled = false; }
-        } else {
-            alert("❌ Web3Forms Engine rejection error. Please try again.");
-            if(otpBtn) { otpBtn.innerText = "TRY AGAIN"; otpBtn.disabled = false; }
         }
-    })
-    .catch(error => {
-        alert("❌ Dynamic Network Request Failed. Check data connectivity.");
-        if(otpBtn) { otpBtn.innerText = "TRY AGAIN"; otpBtn.disabled = false; }
-    });
+    }).catch(() => { alert("❌ Network submission failure."); if(otpBtn) otpBtn.disabled = false; });
 }
 
-// 4. REGISTRATION SUBMIT COMPLIANCE CHECK
 document.getElementById('signup-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const name = document.getElementById('reg-name').value;
@@ -120,7 +113,7 @@ document.getElementById('signup-form').addEventListener('submit', (e) => {
     const password = document.getElementById('reg-password').value;
 
     if (otp !== generatedSignupOTP) {
-        alert("❌ Invalid Verification OTP! Registration process terminated.");
+        alert("❌ Invalid Verification OTP code parameters.");
         return;
     }
 
@@ -132,19 +125,14 @@ document.getElementById('signup-form').addEventListener('submit', (e) => {
     switchAuthMode('login');
 });
 
-// 5. SECURE LOGIN OTP ENGINE (Web3Forms)
+// 3. SECURE VERIFICATION FOR INSTANT LOGIN TRANSFERS
 function sendLoginOTP() {
     const user = document.getElementById('login-username').value;
     const pass = document.getElementById('login-password').value;
     const savedUser = localStorage.getItem('malhar_user');
     const savedPass = localStorage.getItem('malhar_pass');
 
-    if (!user || !pass) {
-        alert("⚠️ Credentials fields missing data input values!");
-        return;
-    }
-
-    // Direct Bypass Logic Control for System Admin
+    // Master Admin Direct Login Core Override Configuration
     if (user === "admin" && pass === "malhar@admin") {
         executeAdminLogin();
         return;
@@ -158,67 +146,44 @@ function sendLoginOTP() {
 
         const formData = new FormData();
         formData.append("access_key", WEB3FORMS_ACCESS_KEY);
-        formData.append("subject", "🔑 MALHAR SHOP - Secure Login Verification Code");
-        formData.append("from_name", "Malhar Mobile System Security");
+        formData.append("subject", "🔑 MALHAR SHOP - Secure Login Attempt Code");
+        formData.append("from_name", "Malhar System Security");
         formData.append("email", user);
-        formData.append("message", `Security Notification: Login request triggered for Malhar Portal.\n\nYour 4-Digit Secure Login Code is: ${generatedLoginOTP}`);
+        formData.append("message", `Security Alert: User is logging into Malhar Shop Portal.\n\nYour 4-Digit Secure Login Code is: ${generatedLoginOTP}`);
 
-        fetch("https://api.web3forms.com/submit", {
-            method: "POST",
-            body: formData
-        })
-        .then(response => response.json())
+        fetch("https://api.web3forms.com/submit", { method: "POST", body: formData })
+        .then(res => res.json())
         .then(data => {
             if(data.success) {
-                alert(`📩 Security Access Code has been dispatched to ${user}. Check your inbox!`);
+                alert(`📩 Access authorization token has been sent to ${user}. Check your inbox!`);
                 document.getElementById('login-otp-section').classList.remove('hidden');
                 document.getElementById('btn-login-submit').classList.remove('hidden');
                 sendOtpBtn.classList.add('hidden');
-                
                 document.getElementById('login-username').readOnly = true;
                 document.getElementById('login-password').readOnly = true;
-            } else {
-                alert("❌ Web3Forms API failed to process dispatch payload.");
-                sendOtpBtn.innerText = "TRY AGAIN";
-                sendOtpBtn.disabled = false;
             }
-        })
-        .catch(error => {
-            alert("❌ Execution pipeline error encountered.");
-            sendOtpBtn.innerText = "TRY AGAIN";
-            sendOtpBtn.disabled = false;
         });
     } else {
-        alert("❌ Credentials match mismatch. Invalid input parameters!");
+        alert("❌ Invalid Username or Password credentials!");
     }
 }
 
-// 6. CUSTOMER DASHBOARD AUTHORIZATION DISPATCH
 document.getElementById('login-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const enteredOTP = document.getElementById('login-otp-input').value;
 
     if (enteredOTP !== generatedLoginOTP) {
-        alert("❌ Authentication Verification Fault! Bad Access Code Token.");
+        alert("❌ Access Denied! Verification token mismatch error.");
         return;
     }
 
-    alert(`👋 Security Profile Confirmed! Welcome to Malhar Shop Dashboard.`);
     localStorage.setItem('current_role', 'customer');
     document.getElementById('auth-screen').classList.add('hidden');
     document.getElementById('dashboard-screen').classList.remove('hidden');
-    
-    document.querySelector('.nav-links').innerHTML = `
-        <li onclick="loadSection('home')" class="active-nav"><i class="fas fa-home"></i> Home</li>
-        <li onclick="loadSection('mobiles')"><i class="fas fa-mobile-alt"></i> Order Mobiles</li>
-        <li onclick="loadSection('profile')"><i class="fas fa-user"></i> My Profile</li>
-        <li onclick="loadSection('about')"><i class="fas fa-info-circle"></i> About Shop</li>
-        <li onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</li>
-    `;
+    setupNavigationLinks('customer');
     loadSection('home');
 });
 
-// Helper clean-state layout controllers
 function resetLoginFormState() {
     document.getElementById('login-form').reset();
     document.getElementById('login-username').readOnly = false;
@@ -226,88 +191,108 @@ function resetLoginFormState() {
     document.getElementById('login-otp-section').classList.add('hidden');
     document.getElementById('btn-login-submit').classList.add('hidden');
     const sendOtpBtn = document.getElementById('btn-login-send-otp');
-    if(sendOtpBtn) {
-        sendOtpBtn.classList.remove('hidden');
-        sendOtpBtn.innerText = "VERIFY & SEND OTP";
-        sendOtpBtn.disabled = false;
-    }
+    if(sendOtpBtn) { sendOtpBtn.classList.remove('hidden'); sendOtpBtn.innerText = "VERIFY & SEND OTP"; sendOtpBtn.disabled = false; }
 }
 
 function executeAdminLogin() {
-    alert("👑 Welcome Master Admin! Opening Central Logging Controls.");
+    alert("👑 Welcome Master Admin Aditya Madavi! Opening Live Customer Database Records.");
     localStorage.setItem('current_role', 'admin');
     document.getElementById('auth-screen').classList.add('hidden');
     document.getElementById('dashboard-screen').classList.remove('hidden');
-    document.querySelector('.nav-links').innerHTML = `
-        <li onclick="loadSection('admin_orders')" class="active-nav"><i class="fas fa-list-alt"></i> All Customer Orders</li>
-        <li onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</li>
-    `;
+    setupNavigationLinks('admin');
     loadSection('admin_orders');
 }
 
-// 7. VIEW COMPONENT DICTIONARY
+// 4. DISPLAY COMPONENT VIEWS DICTIONARY (MATCHED WITH SHOP POSTER ADVERTS)
 const sections = {
     home: `
-        <h2>🚀 Our Premium Services</h2>
+        <h2>🚀 Our Premium Repairing & Services</h2>
         <p style="color: var(--text-gray); margin-bottom: 20px;">Quality You Trust, Service You Deserve</p>
         <div class="grid-container">
-            <div class="neon-card"><h3>🛠️ Mobile Repairing</h3><p>All Types of Mobile Repair</p></div>
-            <div class="neon-card"><h3>💻 Software Solutions</h3><p>Software Update & Flashing</p></div>
-            <div class="neon-card"><h3>⚡ Electronic Items</h3><p>High Quality Accessories</p></div>
-            <div class="neon-card"><h3>🏠 Home Appliances</h3><p>AC, Cooler, Fridge, Washing Machine</p></div>
+            <div class="neon-card">
+                <div class="phone-img-frame"><i class="fas fa-tools"></i></div>
+                <h3>🛠️ Mobile Repairing</h3><p>All types of hardware, motherboard & complex circuit fixes.</p>
+                <button class="btn-neon" style="width:100%; margin-top:10px;" onclick="initiateBookingFlow('Mobile Repairing Service')">Book Repair</button>
+            </div>
+            <div class="neon-card">
+                <div class="phone-img-frame"><i class="fas fa-mobile"></i></div>
+                <h3>📱 Display Replacement</h3><p>Broken glass or screen damage swap with high-grade components.</p>
+                <button class="btn-neon" style="width:100%; margin-top:10px;" onclick="initiateBookingFlow('Display Replacement Service')">Book Panel Swap</button>
+            </div>
+            <div class="neon-card">
+                <div class="phone-img-frame"><i class="fas fa-battery-full"></i></div>
+                <h3>⚡ Battery & Port Repair</h3><p>Long backup replacement cells & high-speed charging ports replacement.</p>
+                <button class="btn-neon" style="width:100%; margin-top:10px;" onclick="initiateBookingFlow('Battery & Charging Port Service')">Book Diagnostics</button>
+            </div>
+            <div class="neon-card">
+                <div class="phone-img-frame"><i class="fas fa-tv"></i></div>
+                <h3>📺 LED TV & Home Appliances</h3><p>Professional fix tracking for AC, Cooler, Fridge & Washing Machines.</p>
+                <button class="btn-neon" style="width:100%; margin-top:10px;" onclick="initiateBookingFlow('Home Appliance/TV Service')">Book Setup Repair</button>
+            </div>
         </div>
     `,
     mobiles: `
-        <h2>📱 Stock & Online Bookings</h2>
-        <p style="color: var(--text-gray); margin-bottom: 20px;">All major brands available with easy finance options</p>
+        <h2>📱 Stock & Online Bookings (Smartphones)</h2>
+        <p style="color: var(--text-gray); margin-bottom: 20px;">All major premium mobile tech devices available with active finance plans</p>
         <div class="grid-container">
             <div class="neon-card">
-                <h3>iPhone 15 Pro Max</h3>
-                <p>Natural Titanium | 256GB Storage</p>
-                <span class="badge">Bajaj Finserv EMI</span>
-                <button class="btn-neon" style="margin-top:15px; padding:8px;" onclick="bookItem('iPhone 15 Pro Max')">Book Order</button>
+                <div class="phone-img-frame"><i class="fas fa-mobile-alt" style="color:#d4af37;"></i></div>
+                <h3>iPhone 15 Pro Max</h3><p>Natural Titanium Variant | 256GB Super Retina XDR</p>
+                <span class="badge">Bajaj Finserv EMI Available</span>
+                <button class="btn-neon" style="width:100%;" onclick="initiateBookingFlow('iPhone 15 Pro Max')">Book Order</button>
             </div>
             <div class="neon-card">
-                <h3>Samsung S24 Ultra</h3>
-                <p>Titanium Gray | 12GB RAM | AI Enabled</p>
-                <span class="badge">TVS Credit Available</span>
-                <button class="btn-neon" style="margin-top:15px; padding:8px;" onclick="bookItem('Samsung S24 Ultra')">Book Order</button>
+                <div class="phone-img-frame"><i class="fas fa-mobile-alt" style="color:#a442f5;"></i></div>
+                <h3>Samsung S24 Ultra</h3><p>Titanium Gray | 12GB RAM | Galaxy AI Processing Suite</p>
+                <span class="badge">TVS Credit Quick Verification</span>
+                <button class="btn-neon" style="width:100%;" onclick="initiateBookingFlow('Samsung S24 Ultra')">Book Order</button>
             </div>
             <div class="neon-card">
-                <h3>OnePlus 12R</h3>
-                <p>Iron Gray | 16GB RAM + 256GB</p>
-                <span class="badge">Low Down Payment</span>
-                <button class="btn-neon" style="margin-top:15px; padding:8px;" onclick="bookItem('OnePlus 12R')">Book Order</button>
+                <div class="phone-img-frame"><i class="fas fa-mobile-alt" style="color:#00ffaa;"></i></div>
+                <h3>OnePlus 12R</h3><p>Iron Gray Flagship Unit | 16GB RAM + 256GB Storage</p>
+                <span class="badge">Zero Down Payment Scheme</span>
+                <button class="btn-neon" style="width:100%;" onclick="initiateBookingFlow('OnePlus 12R')">Book Order</button>
             </div>
         </div>
     `,
     profile: `
-        <h2>👤 Active Session Details</h2>
-        <div class="neon-card" style="margin-top: 20px; max-width: 500px;">
-            <p style="margin-bottom: 10px;"><strong>Customer Name:</strong> <span id="dash-cust-name" style="color:var(--neon-blue);"></span></p>
-            <p style="margin-bottom: 10px;"><strong>Registered ID/Email:</strong> <span id="dash-cust-user" style="color:var(--gold);"></span></p>
-            <p><strong>Verification Rank:</strong> <span style="color:#00ff88;">Premium Buyer Tier</span></p>
+        <h2>📋 My Active Bookings Tracking Status</h2>
+        <p style="color: var(--text-gray); margin-bottom: 20px;">Real-time validation updates for ongoing product requests</p>
+        <div class="neon-card" style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr style="color: var(--gold);">
+                        <th>Item/Service Name</th>
+                        <th>Contact Mobile No</th>
+                        <th>Current Status Level</th>
+                    </tr>
+                </thead>
+                <tbody id="customer-tracker-table"></tbody>
+            </table>
         </div>
     `,
     about: `
-        <h2>🏪 Store Directory & Contact Information</h2>
-        <div class="neon-card" style="margin-top: 20px;">
-            <h3>👑 Managed By: Aditya Madavi</h3>
-            <p style="margin-top: 10px;"><i class="fas fa-phone-alt"></i> +91 8788461756</p>
-            <p><i class="fab fa-whatsapp" style="color: #25d366;"></i> +91 9112390404</p>
+        <h2>🏪 Store Directory & Authorized Operations</h2>
+        <div class="neon-card" style="margin-top: 20px; max-width:600px; text-align:left;">
+            <h3 style="color:var(--gold); font-family:'Orbitron',sans-serif;"><i class="fas fa-user-tie"></i> Managed By: Aditya Madavi</h3>
+            <p style="margin-top: 15px;"><i class="fas fa-phone-alt" style="color:var(--neon-blue);"></i> <strong>Calling Lines:</strong> +91 8788461756</p>
+            <p><i class="fab fa-whatsapp" style="color: #25d366;"></i> <strong>WhatsApp Support Channel:</strong> +91 9112390404</p>
+            <p style="color: var(--text-gray); font-size:0.85rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:12px; margin-top:15px;"><i class="fas fa-check-double"></i> Verified Premium Quality Center. 100% Customer Satisfaction Rate Guaranteed.</p>
         </div>
     `,
     admin_orders: `
-        <h2>📋 Live Customer Orders (Admin View)</h2>
-        <p style="color: var(--text-gray); margin-bottom: 20px;">Manage bookings and contact details for finance/EMI verification</p>
+        <h2>📋 Live Customer Bookings Database (Master Controller View)</h2>
+        <p style="color: var(--text-gray); margin-bottom: 20px;">Manage token parameters, verify transactions data and update statuses</p>
         <div class="neon-card" style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; text-align: left; color: var(--text-white);">
+            <table>
                 <thead>
-                    <tr style="border-bottom: 2px solid var(--neon-blue); color: var(--gold);">
-                        <th style="padding: 12px;">Customer Name</th>
-                        <th style="padding: 12px;">Email ID</th>
-                        <th style="padding: 12px;">Product Booked</th>
-                        <th style="padding: 12px;">Action</th>
+                    <tr style="color: var(--gold);">
+                        <th>Buyer Name</th>
+                        <th>Email ID</th>
+                        <th>Phone Number</th>
+                        <th>Booked Item</th>
+                        <th>Fee Parameters</th>
+                        <th>Operational Actions</th>
                     </tr>
                 </thead>
                 <tbody id="admin-orders-table"></tbody>
@@ -329,176 +314,151 @@ function loadSection(sectionName) {
         }
     });
 
-    if (sectionName === 'profile') {
-        const dName = document.getElementById('dash-cust-name');
-        const dUser = document.getElementById('dash-cust-user');
-        if(dName) dName.innerText = localStorage.getItem('malhar_name') || "N/A";
-        if(dUser) dUser.innerText = localStorage.getItem('malhar_user') || "N/A";
-    }
-
-    if (sectionName === 'admin_orders') {
-        renderAdminOrders();
-    }
+    if (sectionName === 'profile') renderCustomerTracker();
+    if (sectionName === 'admin_orders') renderAdminOrders();
+    
     const sidebar = document.getElementById('sidebar');
     if(sidebar) sidebar.classList.remove('active');
 }
 
-// 8. DATA CONTROLLERS & DATA LOGGING INTERFACES
-function bookItem(itemName) {
-    const custName = localStorage.getItem('malhar_name') || "Walk-in Customer";
-    const custContact = localStorage.getItem('malhar_user') || "Not Provided";
+// 5. SECURE UPSTREAM BOOKING PIPELINE CONTROLLERS
+let temporaryBookingItemName = null;
 
-    let allOrders = JSON.parse(localStorage.getItem('malhar_master_orders')) || [];
+function initiateBookingFlow(itemName) {
+    temporaryBookingItemName = itemName;
+    const modal = document.getElementById('payment-modal');
+    if(modal) {
+        document.getElementById('order-phone').value = "";
+        modal.classList.remove('hidden');
+    }
+}
 
-    const newOrder = { name: custName, contact: custContact, product: itemName };
-    allOrders.push(newOrder);
-    localStorage.setItem('malhar_master_orders', JSON.stringify(allOrders));
+function closePaymentModal() {
+    const modal = document.getElementById('payment-modal');
+    if(modal) modal.classList.add('hidden');
+    temporaryBookingItemName = null;
+}
 
-    alert(`🎉 Success! Your booking request for ${itemName} has been securely submitted.`);
+function confirmAdvancePayment() {
+    const phoneInput = document.getElementById('order-phone').value;
+    if (!phoneInput || phoneInput.length < 10) {
+        alert("⚠️ Please enter a valid 10-Digit Mobile Phone Number first!");
+        return;
+    }
+
+    const custName = localStorage.getItem('malhar_name') || "Customer Profile";
+    const custEmail = localStorage.getItem('malhar_user') || "no-email@portal.io";
+
+    let databaseOrders = JSON.parse(localStorage.getItem('malhar_master_orders')) || [];
+
+    const newOrderPayload = {
+        name: custName,
+        email: custEmail,
+        phone: phoneInput,
+        product: temporaryBookingItemName,
+        status: "Pending Admin Verification (Paid ₹50)"
+    };
+
+    databaseOrders.push(newOrderPayload);
+    localStorage.setItem('malhar_master_orders', JSON.stringify(databaseOrders));
+
+    // TRANSMITTING AUTOMATIC SECURE LIVE ALERT NOTIFICATION TO OWNERS EMAIL VIA WEB3FORMS PIPELINE
+    const adminMailForm = new FormData();
+    adminMailForm.append("access_key", WEB3FORMS_ACCESS_KEY);
+    adminMailForm.append("subject", `🚨 NEW ORDER BOOKING REQUEST - ${temporaryBookingItemName}`);
+    adminMailForm.append("from_name", "Malhar Portal Automation");
+    adminMailForm.append("email", "onlainajay@gmail.com"); 
+    adminMailForm.append("message", `New Secure Booking Entry Created!\n\nCustomer Name: ${custName}\nRegistered Email ID: ${custEmail}\nActive Phone Number: ${phoneInput}\nItem Booked: ${temporaryBookingItemName}\nAdvance Status: ₹50 Token Payment Registered.\n\nPlease log in to the system via Master Admin parameters to review or approve this ticket payload.`);
+
+    fetch("https://api.web3forms.com/submit", { method: "POST", body: adminMailForm });
+
+    alert(`🎉 Booking Successful! Your order request data for ${temporaryBookingItemName} along with transaction records have been sent to Admin Aditya Madavi.`);
+    closePaymentModal();
+    loadSection('profile');
+}
+
+// 6. RENDER TRACKING VIEWS DATA INJECTIONS
+function renderCustomerTracker() {
+    const tableBody = document.getElementById('customer-tracker-table');
+    if(!tableBody) return;
+
+    let databaseOrders = JSON.parse(localStorage.getItem('malhar_master_orders')) || [];
+    const currentEmail = localStorage.getItem('malhar_user');
+    const profileOrders = databaseOrders.filter(o => o.email === currentEmail);
+
+    if (profileOrders.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="3" style="padding: 20px; text-align: center; color: var(--text-gray);">No live active bookings under this session parameters. 📭</td></tr>`;
+        return;
+    }
+
+    tableBody.innerHTML = "";
+    profileOrders.forEach(order => {
+        tableBody.innerHTML += `
+            <tr>
+                <td style="font-weight: bold; color:var(--text-white);">${order.product}</td>
+                <td style="color: var(--neon-blue); font-weight:500;">${order.phone}</td>
+                <td><span style="color: ${order.status.includes('Confirmed') ? '#00ff88' : '#ffaa00'}; font-weight:bold;">${order.status}</span></td>
+            </tr>
+        `;
+    });
 }
 
 function renderAdminOrders() {
     const tableBody = document.getElementById('admin-orders-table');
     if (!tableBody) return;
 
-    let allOrders = JSON.parse(localStorage.getItem('malhar_master_orders')) || [];
+    let databaseOrders = JSON.parse(localStorage.getItem('malhar_master_orders')) || [];
 
-    if (allOrders.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="4" style="padding: 20px; text-align: center; color: var(--text-gray);">No orders received yet. 📭</td></tr>`;
+    if (databaseOrders.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="6" style="padding: 20px; text-align: center; color: var(--text-gray);">Database records storage pipeline is empty. 📭</td></tr>`;
         return;
     }
 
     tableBody.innerHTML = "";
-    allOrders.forEach((order, index) => {
+    databaseOrders.forEach((order, idx) => {
         tableBody.innerHTML += `
-            <tr style="border-bottom: 1px solid var(--glass-border);">
-                <td style="padding: 12px;">${order.name}</td>
-                <td style="padding: 12px; color: var(--neon-blue);">${order.contact}</td>
-                <td style="padding: 12px; color: var(--gold);">${order.product}</td>
-                <td style="padding: 12px;"><button onclick="deleteOrder(${index})" style="background:#ff4d4d; border:none; color:white; padding:5px 10px; cursor:pointer; border-radius:4px;">Complete</button></td>
+            <tr>
+                <td>${order.name}</td>
+                <td style="color: var(--text-gray); font-size:0.85rem;">${order.email}</td>
+                <td style="color: var(--neon-blue); font-weight:500;">${order.phone}</td>
+                <td style="color: var(--gold); font-weight:bold;">${order.product}</td>
+                <td><span style="color:#00ff88; font-weight:bold;">${order.status}</span></td>
+                <td style="display:flex; gap:8px;">
+                    <button onclick="approveOrder(${idx})" style="background:#00cc66; border:none; color:white; padding:6px 10px; cursor:pointer; border-radius:4px; font-weight:bold; font-family:'Poppins'; font-size:0.8rem;">Approve</button>
+                    <button onclick="clearAdminEntry(${idx})" style="background:#ff3333; border:none; color:white; padding:6px 10px; cursor:pointer; border-radius:4px; font-family:'Poppins'; font-size:0.8rem;">Delete</button>
+                </td>
             </tr>
         `;
     });
 }
 
-function deleteOrder(index) {
-    let allOrders = JSON.parse(localStorage.getItem('malhar_master_orders')) || [];
-    allOrders.splice(index, 1);
-    localStorage.setItem('malhar_master_orders', JSON.stringify(allOrders));
+function approveOrder(index) {
+    let databaseOrders = JSON.parse(localStorage.getItem('malhar_master_orders')) || [];
+    databaseOrders[index].status = "Booking Verified & Confirmed ✅";
+    localStorage.setItem('malhar_master_orders', JSON.stringify(databaseOrders));
+    alert("🚀 Order State Verified! Customer tracking dashboard parameter has been updated instantly.");
     renderAdminOrders();
 }
 
-// 9. RESPONSIVE SIDEBAR ACTIONS
+function clearAdminEntry(index) {
+    if(confirm("Permanently delete this customer order data payload entry?")) {
+        let databaseOrders = JSON.parse(localStorage.getItem('malhar_master_orders')) || [];
+        databaseOrders.splice(index, 1);
+        localStorage.setItem('malhar_master_orders', JSON.stringify(databaseOrders));
+        renderAdminOrders();
+    }
+}
+
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     if(sidebar) sidebar.classList.toggle('active');
 }
 
-// 10. SESSION TERMINATION
 function logout() {
-    if (confirm("Are you sure you want to log out from Malhar Mobile Shop?")) {
+    if (confirm("Terminate active session token dashboard visibility?")) {
         document.getElementById('dashboard-screen').classList.add('hidden');
         document.getElementById('auth-screen').classList.remove('hidden');
         resetLoginFormState();
         localStorage.removeItem('current_role');
     }
-        }
-:root {
-    --bg-dark: #070714;
-    --neon-blue: #00f3ff;
-    --gold: #ffaa00;
-    --card-bg: rgba(255, 255, 255, 0.04);
-    --glass-border: rgba(0, 243, 255, 0.2);
-    --text-white: #ffffff;
-    --text-gray: #a5a5b5;
 }
-
-body {
-    background-color: var(--bg-dark);
-    color: var(--text-white);
-    font-family: 'Poppins', sans-serif;
-    margin: 0; padding: 0;
-}
-
-.hidden { display: none !important; }
-
-/* Grid Cards with Hover Animations */
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px; padding: 20px 0;
-}
-
-.neon-card {
-    background: var(--card-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease-in-out;
-}
-
-.neon-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
-    border-color: var(--neon-blue);
-}
-
-/* Simulated Image Boxes */
-.phone-img-frame {
-    width: 100%;
-    height: 160px;
-    background: linear-gradient(45deg, #121232, #1c1c4a);
-    border-radius: 8px;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 3.5rem;
-    color: var(--neon-blue);
-    text-shadow: 0 0 10px var(--neon-blue);
-}
-
-.badge {
-    background: rgba(255, 170, 0, 0.15);
-    color: var(--gold);
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: bold;
-    display: inline-block;
-    margin-top: 5px;
-    border: 1px solid rgba(255, 170, 0, 0.3);
-}
-
-/* Modal Popup Window */
-.modal-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.85);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 9999; padding: 15px;
-}
-
-.modal-box {
-    background: #0d0d26;
-    border: 2px solid var(--neon-blue);
-    box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
-    padding: 25px; border-radius: 16px;
-    max-width: 450px; width: 100%;
-}
-
-.qr-placeholder {
-    width: 180px; height: 180px;
-    margin: 15px auto;
-    background: white;
-    padding: 10px; border-radius: 8px;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    color: #333; font-weight: bold; font-size: 0.9rem;
-}
-
-
-        
