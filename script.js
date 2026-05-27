@@ -1,4 +1,7 @@
-// --- MALHAR MOBILE SHOP CORE LOGIC ---
+// --- MALHAR MOBILE SHOP CORE LOGIC (WEB3FORMS REAL OTP SYSTEM) ---
+
+// 🔑 Free Web3Forms Token Key Integrated Successfully
+const WEB3FORMS_ACCESS_KEY = "f9e40d87-2638-482c-8b43-3444d8fc825d";
 
 // 1. SPLASH SCREEN TO AUTH SCREEN TRANSITION & SESSION CHECK
 window.addEventListener('DOMContentLoaded', () => {
@@ -13,7 +16,6 @@ window.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             if(splash) splash.classList.add('hidden');
             
-            // Checking if user session already exists on page refresh
             if (activeRole === 'admin' || activeRole === 'customer') {
                 if(dashboard) dashboard.classList.remove('hidden');
                 if (activeRole === 'admin') {
@@ -47,6 +49,8 @@ function switchAuthMode(mode) {
     const btnLogin = document.getElementById('btn-login-active');
     const btnSignup = document.getElementById('btn-signup');
 
+    resetLoginFormState();
+
     if (mode === 'signup') {
         if(loginForm) loginForm.classList.add('hidden');
         if(signupForm) signupForm.classList.remove('hidden');
@@ -62,9 +66,11 @@ function switchAuthMode(mode) {
     }
 }
 
-// 3. REAL OTP SYSTEM LOGIC (Using EmailJS)
-let generatedOTP = null;
+// Global scope tracker variables for access code validation
+let generatedSignupOTP = null;
+let generatedLoginOTP = null;
 
+// 3. SECURE SIGNUP OTP ACTION (Web3Forms)
 function sendOTP() {
     const contact = document.getElementById('reg-contact').value;
     const otpBtn = document.getElementById('send-otp-btn');
@@ -74,40 +80,38 @@ function sendOTP() {
         return;
     }
 
-    // 4-digit random OTP generation
-    generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
+    generatedSignupOTP = Math.floor(1000 + Math.random() * 9000).toString();
+    if(otpBtn) { otpBtn.innerText = "Sending..."; otpBtn.disabled = true; }
 
-    if(otpBtn) {
-        otpBtn.innerText = "Sending...";
-        otpBtn.disabled = true;
-    }
+    const formData = new FormData();
+    formData.append("access_key", WEB3FORMS_ACCESS_KEY);
+    formData.append("subject", "🛡️ MALHAR SHOP - Registration Verification OTP");
+    formData.append("from_name", "Malhar Shop Gateway");
+    formData.append("email", contact);
+    formData.append("message", `Welcome to Malhar Mobile & Electronic Shop.\n\nYour 4-Digit Security Registration OTP is: ${generatedSignupOTP}\n\nPlease verify this to finalize registration setup.`);
 
-    const templateParams = {
-        to_email: contact,
-        otp: generatedOTP
-    };
-
-    // NOTE: Apne EmailJS dashboard se 'service_id' aur 'template_id' yahan conformingly verify karein
-    emailjs.send('service_iwf9j7a', 'template_1frvmnc', templateParams)
-        .then(function(response) {
-            alert(`📩 Real OTP Sent Successfully to ${contact}!\nPlease check your inbox or spam folder.`);
-            const otpField = document.getElementById('otp-input-field');
-            if(otpField) otpField.classList.remove('hidden');
-            if(otpBtn) {
-                otpBtn.innerText = "RESEND OTP";
-                otpBtn.disabled = false;
-            }
-        }, function(error) {
-            alert("❌ Failed to send OTP. Please check your Gmail Connection on EmailJS.");
-            if(otpBtn) {
-                otpBtn.innerText = "TRY AGAIN";
-                otpBtn.disabled = false;
-            }
-            console.log('FAILED...', error);
-        });
+    fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            alert(`📩 Verification OTP Sent Successfully to ${contact}! Please check your email inbox.`);
+            document.getElementById('otp-input-field').classList.remove('hidden');
+            if(otpBtn) { otpBtn.innerText = "RESEND OTP"; otpBtn.disabled = false; }
+        } else {
+            alert("❌ Web3Forms Engine rejection error. Please try again.");
+            if(otpBtn) { otpBtn.innerText = "TRY AGAIN"; otpBtn.disabled = false; }
+        }
+    })
+    .catch(error => {
+        alert("❌ Dynamic Network Request Failed. Check data connectivity.");
+        if(otpBtn) { otpBtn.innerText = "TRY AGAIN"; otpBtn.disabled = false; }
+    });
 }
 
-// 4. REGISTRATION WITH REAL OTP VERIFICATION
+// 4. REGISTRATION SUBMIT COMPLIANCE CHECK
 document.getElementById('signup-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const name = document.getElementById('reg-name').value;
@@ -115,8 +119,8 @@ document.getElementById('signup-form').addEventListener('submit', (e) => {
     const otp = document.getElementById('reg-otp').value;
     const password = document.getElementById('reg-password').value;
 
-    if (otp !== generatedOTP) {
-        alert("❌ Invalid OTP! Verification failed.");
+    if (otp !== generatedSignupOTP) {
+        alert("❌ Invalid Verification OTP! Registration process terminated.");
         return;
     }
 
@@ -124,54 +128,124 @@ document.getElementById('signup-form').addEventListener('submit', (e) => {
     localStorage.setItem('malhar_pass', password);
     localStorage.setItem('malhar_name', name);
 
-    alert("🎉 Account Registered Successfully! Switching to Login.");
+    alert("🎉 Account Registered Successfully! Switching to Secure Login Panel.");
     switchAuthMode('login');
 });
 
-// 5. LOGIN AUTHENTICATION (WITH ADMIN ACCOUNT)
-document.getElementById('login-form').addEventListener('submit', (e) => {
-    e.preventDefault();
+// 5. SECURE LOGIN OTP ENGINE (Web3Forms)
+function sendLoginOTP() {
     const user = document.getElementById('login-username').value;
     const pass = document.getElementById('login-password').value;
-
-    // Secret Admin Credentials for Malhar Mobile Shop
-    if (user === "admin" && pass === "malhar@admin") {
-        alert("👑 Welcome Admin! Opening Master Control Panel.");
-        localStorage.setItem('current_role', 'admin');
-        document.getElementById('auth-screen').classList.add('hidden');
-        document.getElementById('dashboard-screen').classList.remove('hidden');
-        
-        document.querySelector('.nav-links').innerHTML = `
-            <li onclick="loadSection('admin_orders')" class="active-nav"><i class="fas fa-list-alt"></i> All Customer Orders</li>
-            <li onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</li>
-        `;
-        loadSection('admin_orders');
-        return;
-    }
-
     const savedUser = localStorage.getItem('malhar_user');
     const savedPass = localStorage.getItem('malhar_pass');
 
-    if (user === savedUser && pass === savedPass) {
-        alert(`👋 Access Granted! Welcome to Malhar Dashboard.`);
-        localStorage.setItem('current_role', 'customer');
-        document.getElementById('auth-screen').classList.add('hidden');
-        document.getElementById('dashboard-screen').classList.remove('hidden');
-        
-        document.querySelector('.nav-links').innerHTML = `
-            <li onclick="loadSection('home')" class="active-nav"><i class="fas fa-home"></i> Home</li>
-            <li onclick="loadSection('mobiles')"><i class="fas fa-mobile-alt"></i> Order Mobiles</li>
-            <li onclick="loadSection('profile')"><i class="fas fa-user"></i> My Profile</li>
-            <li onclick="loadSection('about')"><i class="fas fa-info-circle"></i> About Shop</li>
-            <li onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</li>
-        `;
-        loadSection('home');
-    } else {
-        alert("❌ Invalid Username or Password!");
+    if (!user || !pass) {
+        alert("⚠️ Credentials fields missing data input values!");
+        return;
     }
+
+    // Direct Bypass Logic Control for System Admin
+    if (user === "admin" && pass === "malhar@admin") {
+        executeAdminLogin();
+        return;
+    }
+
+    if (user === savedUser && pass === savedPass) {
+        generatedLoginOTP = Math.floor(1000 + Math.random() * 9000).toString();
+        const sendOtpBtn = document.getElementById('btn-login-send-otp');
+        sendOtpBtn.innerText = "Sending Login Code...";
+        sendOtpBtn.disabled = true;
+
+        const formData = new FormData();
+        formData.append("access_key", WEB3FORMS_ACCESS_KEY);
+        formData.append("subject", "🔑 MALHAR SHOP - Secure Login Verification Code");
+        formData.append("from_name", "Malhar Mobile System Security");
+        formData.append("email", user);
+        formData.append("message", `Security Notification: Login request triggered for Malhar Portal.\n\nYour 4-Digit Secure Login Code is: ${generatedLoginOTP}`);
+
+        fetch("https://api.web3forms.com/submit", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                alert(`📩 Security Access Code has been dispatched to ${user}. Check your inbox!`);
+                document.getElementById('login-otp-section').classList.remove('hidden');
+                document.getElementById('btn-login-submit').classList.remove('hidden');
+                sendOtpBtn.classList.add('hidden');
+                
+                document.getElementById('login-username').readOnly = true;
+                document.getElementById('login-password').readOnly = true;
+            } else {
+                alert("❌ Web3Forms API failed to process dispatch payload.");
+                sendOtpBtn.innerText = "TRY AGAIN";
+                sendOtpBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            alert("❌ Execution pipeline error encountered.");
+            sendOtpBtn.innerText = "TRY AGAIN";
+            sendOtpBtn.disabled = false;
+        });
+    } else {
+        alert("❌ Credentials match mismatch. Invalid input parameters!");
+    }
+}
+
+// 6. CUSTOMER DASHBOARD AUTHORIZATION DISPATCH
+document.getElementById('login-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const enteredOTP = document.getElementById('login-otp-input').value;
+
+    if (enteredOTP !== generatedLoginOTP) {
+        alert("❌ Authentication Verification Fault! Bad Access Code Token.");
+        return;
+    }
+
+    alert(`👋 Security Profile Confirmed! Welcome to Malhar Shop Dashboard.`);
+    localStorage.setItem('current_role', 'customer');
+    document.getElementById('auth-screen').classList.add('hidden');
+    document.getElementById('dashboard-screen').classList.remove('hidden');
+    
+    document.querySelector('.nav-links').innerHTML = `
+        <li onclick="loadSection('home')" class="active-nav"><i class="fas fa-home"></i> Home</li>
+        <li onclick="loadSection('mobiles')"><i class="fas fa-mobile-alt"></i> Order Mobiles</li>
+        <li onclick="loadSection('profile')"><i class="fas fa-user"></i> My Profile</li>
+        <li onclick="loadSection('about')"><i class="fas fa-info-circle"></i> About Shop</li>
+        <li onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</li>
+    `;
+    loadSection('home');
 });
 
-// 6. DYNAMIC DASHBOARD CONTENT SYSTEM
+// Helper clean-state layout controllers
+function resetLoginFormState() {
+    document.getElementById('login-form').reset();
+    document.getElementById('login-username').readOnly = false;
+    document.getElementById('login-password').readOnly = false;
+    document.getElementById('login-otp-section').classList.add('hidden');
+    document.getElementById('btn-login-submit').classList.add('hidden');
+    const sendOtpBtn = document.getElementById('btn-login-send-otp');
+    if(sendOtpBtn) {
+        sendOtpBtn.classList.remove('hidden');
+        sendOtpBtn.innerText = "VERIFY & SEND OTP";
+        sendOtpBtn.disabled = false;
+    }
+}
+
+function executeAdminLogin() {
+    alert("👑 Welcome Master Admin! Opening Central Logging Controls.");
+    localStorage.setItem('current_role', 'admin');
+    document.getElementById('auth-screen').classList.add('hidden');
+    document.getElementById('dashboard-screen').classList.remove('hidden');
+    document.querySelector('.nav-links').innerHTML = `
+        <li onclick="loadSection('admin_orders')" class="active-nav"><i class="fas fa-list-alt"></i> All Customer Orders</li>
+        <li onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</li>
+    `;
+    loadSection('admin_orders');
+}
+
+// 7. VIEW COMPONENT DICTIONARY
 const sections = {
     home: `
         <h2>🚀 Our Premium Services</h2>
@@ -269,23 +343,18 @@ function loadSection(sectionName) {
     if(sidebar) sidebar.classList.remove('active');
 }
 
-// 7. ORDER BOOKING SYSTEM WITH ADMIN STORAGE
+// 8. DATA CONTROLLERS & DATA LOGGING INTERFACES
 function bookItem(itemName) {
     const custName = localStorage.getItem('malhar_name') || "Walk-in Customer";
     const custContact = localStorage.getItem('malhar_user') || "Not Provided";
 
     let allOrders = JSON.parse(localStorage.getItem('malhar_master_orders')) || [];
 
-    const newOrder = {
-        name: custName,
-        contact: custContact,
-        product: itemName
-    };
-
+    const newOrder = { name: custName, contact: custContact, product: itemName };
     allOrders.push(newOrder);
     localStorage.setItem('malhar_master_orders', JSON.stringify(allOrders));
 
-    alert(`🎉 Success! Your booking request for ${itemName} has been securely submitted to the Admin Panel.`);
+    alert(`🎉 Success! Your booking request for ${itemName} has been securely submitted.`);
 }
 
 function renderAdminOrders() {
@@ -319,18 +388,19 @@ function deleteOrder(index) {
     renderAdminOrders();
 }
 
-// 8. SIDEBAR RESPONSIVE TOGGLE
+// 9. RESPONSIVE SIDEBAR ACTIONS
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     if(sidebar) sidebar.classList.toggle('active');
 }
 
-// 9. LOGOUT SESSION KILLER
+// 10. SESSION TERMINATION
 function logout() {
     if (confirm("Are you sure you want to log out from Malhar Mobile Shop?")) {
         document.getElementById('dashboard-screen').classList.add('hidden');
         document.getElementById('auth-screen').classList.remove('hidden');
-        document.getElementById('login-form').reset();
+        resetLoginFormState();
         localStorage.removeItem('current_role');
     }
-}
+        }
+        
