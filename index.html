@@ -8,14 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-       (function(){
-          // ✅ Aapki Asli Public Key Yahan Set Ho Gayi Hai
-          emailjs.init("pnqliOgruA8M88-18"); 
-       })();
-    </script>
 </head>
 <body>
 
@@ -41,13 +33,23 @@
             <form id="login-form" class="auth-form">
                 <div class="input-group">
                     <i class="fas fa-user"></i>
-                    <input type="text" id="login-username" placeholder="Email / Username" required>
+                    <input type="text" id="login-username" placeholder="Registered Email / Username" required>
                 </div>
-                <div class="input-group">
+                <div class="input-group" id="login-pass-group">
                     <i class="fas fa-lock"></i>
                     <input type="password" id="login-password" placeholder="Password" required>
                 </div>
-                <button type="submit" class="btn-neon">LOGIN <i class="fas fa-sign-in-alt"></i></button>
+
+                <div id="login-otp-section" class="otp-section hidden" style="margin-bottom: 15px;">
+                    <div class="input-group">
+                        <i class="fas fa-key"></i>
+                        <input type="text" id="login-otp-input" placeholder="Enter 4-Digit Login OTP" maxlength="4">
+                    </div>
+                </div>
+
+                <button type="button" id="btn-login-send-otp" class="btn-neon" onclick="sendLoginOTP()">VERIFY & SEND OTP <i class="fas fa-paper-plane"></i></button>
+                <button type="submit" id="btn-login-submit" class="btn-neon hidden">SECURE LOGIN <i class="fas fa-sign-in-alt"></i></button>
+                
                 <p class="switch-text">New here? <a href="#" onclick="switchAuthMode('signup')">Create Account</a></p>
             </form>
 
@@ -58,7 +60,6 @@
                 </div>
                 <div class="input-group">
                     <i class="fas fa-envelope"></i>
-o
                     <input type="email" id="reg-contact" placeholder="Enter Email Address" required>
                 </div>
 
@@ -91,12 +92,7 @@ o
                     <h3>MALHAR<span class="gold">.MOB</span></h3>
                 </div>
                 <ul class="nav-links">
-                    <li onclick="loadSection('home')" class="active-nav"><i class="fas fa-home"></i> Home</li>
-                    <li onclick="loadSection('mobiles')"><i class="fas fa-mobile-alt"></i> Order Mobiles</li>
-                    <li onclick="loadSection('profile')"><i class="fas fa-user"></i> My Profile</li>
-                    <li onclick="loadSection('about')"><i class="fas fa-info-circle"></i> About Shop</li>
-                    <li onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</li>
-                </ul>
+                    </ul>
             </nav>
 
             <main id="main-content"></main>
@@ -105,4 +101,5 @@ o
 
     <script src="script.js"></script>
 </body>
-</html>
+                            </html>
+    
