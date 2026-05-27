@@ -403,4 +403,102 @@ function logout() {
         localStorage.removeItem('current_role');
     }
         }
+:root {
+    --bg-dark: #070714;
+    --neon-blue: #00f3ff;
+    --gold: #ffaa00;
+    --card-bg: rgba(255, 255, 255, 0.04);
+    --glass-border: rgba(0, 243, 255, 0.2);
+    --text-white: #ffffff;
+    --text-gray: #a5a5b5;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+    font-family: 'Poppins', sans-serif;
+    margin: 0; padding: 0;
+}
+
+.hidden { display: none !important; }
+
+/* Grid Cards with Hover Animations */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px; padding: 20px 0;
+}
+
+.neon-card {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+}
+
+.neon-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+    border-color: var(--neon-blue);
+}
+
+/* Simulated Image Boxes */
+.phone-img-frame {
+    width: 100%;
+    height: 160px;
+    background: linear-gradient(45deg, #121232, #1c1c4a);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px var(--neon-blue);
+}
+
+.badge {
+    background: rgba(255, 170, 0, 0.15);
+    color: var(--gold);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    display: inline-block;
+    margin-top: 5px;
+    border: 1px solid rgba(255, 170, 0, 0.3);
+}
+
+/* Modal Popup Window */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; padding: 15px;
+}
+
+.modal-box {
+    background: #0d0d26;
+    border: 2px solid var(--neon-blue);
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
+    padding: 25px; border-radius: 16px;
+    max-width: 450px; width: 100%;
+}
+
+.qr-placeholder {
+    width: 180px; height: 180px;
+    margin: 15px auto;
+    background: white;
+    padding: 10px; border-radius: 8px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: #333; font-weight: bold; font-size: 0.9rem;
+}
+
+
         
