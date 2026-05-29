@@ -1,8 +1,8 @@
-// --- MALHAR MOBILE SHOP AND ELECTRONIC CORE LOGIC GATEWAY ---
+// --- MALHAR MOBILE SHOP AND ELECTRONIC CORE LOGICAL SYSTEM ---
 
 const WEB3FORMS_ACCESS_KEY = "f9e40d87-2638-482c-8b43-3444d8fc825d";
 
-// 1. DESIRED RUNTIME STATE INITIALIZATION & SESSION ANALYSIS
+// 1. ENGINE RUNTIME STATE HANDLERS
 window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         const splash = document.getElementById('splash-screen');
@@ -26,7 +26,6 @@ window.addEventListener('DOMContentLoaded', () => {
     }, 3500);
 });
 
-// Dynamic Sidebar Links Deployment Engine
 function setupNavigationLinks(role) {
     const navLinks = document.querySelector('.nav-links');
     if(!navLinks) return;
@@ -50,31 +49,25 @@ function setupNavigationLinks(role) {
 function switchAuthMode(mode) {
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
-    const authTitle = document.getElementById('auth-title');
     const btnLogin = document.getElementById('btn-login-active');
     const btnSignup = document.getElementById('btn-signup');
-
-    resetLoginFormState();
 
     if (mode === 'signup') {
         if(loginForm) loginForm.classList.add('hidden');
         if(signupForm) signupForm.classList.remove('hidden');
-        if(authTitle) authTitle.innerText = "CREATE ACCOUNT";
         if(btnSignup) btnSignup.classList.add('active');
         if(btnLogin) btnLogin.classList.remove('active');
     } else {
         if(signupForm) signupForm.classList.add('hidden');
         if(loginForm) loginForm.classList.remove('hidden');
-        if(authTitle) authTitle.innerText = "WELCOME BACK";
         if(btnLogin) btnLogin.classList.add('active');
         if(btnSignup) btnSignup.classList.remove('active');
     }
 }
 
 let generatedSignupOTP = null;
-let generatedLoginOTP = null;
 
-// 2. WEB3FORMS SYSTEM OTP DISPATCH (FREE LIFETIME CHANNELS)
+// 2. LIFETIME SINGLE OTP VERIFICATION MATRIX FOR SIGNUPS
 function sendOTP() {
     const contact = document.getElementById('reg-contact').value;
     const otpBtn = document.getElementById('send-otp-btn');
@@ -85,24 +78,24 @@ function sendOTP() {
     }
 
     generatedSignupOTP = Math.floor(1000 + Math.random() * 9000).toString();
-    if(otpBtn) { otpBtn.innerText = "Sending..."; otpBtn.disabled = true; }
+    if(otpBtn) { otpBtn.innerText = "Sending Secure OTP..."; otpBtn.disabled = true; }
 
     const formData = new FormData();
     formData.append("access_key", WEB3FORMS_ACCESS_KEY);
-    formData.append("subject", "🛡️ MALHAR SHOP - Registration Verification Code");
-    formData.append("from_name", "Malhar Shop Gateway");
+    formData.append("subject", "🛡️ MALHAR SHOP - Registration Passcode Token");
+    formData.append("from_name", "Malhar Safety Center");
     formData.append("email", contact);
-    formData.append("message", `Welcome to Malhar Mobile & Electronic Shop.\n\nYour 4-Digit Registration Security OTP is: ${generatedSignupOTP}`);
+    formData.append("message", `Welcome to Malhar Shop.\n\nYour 4-Digit Secure Sign-Up Verification Code is: ${generatedSignupOTP}`);
 
     fetch("https://api.web3forms.com/submit", { method: "POST", body: formData })
     .then(res => res.json())
     .then(data => {
         if(data.success) {
-            alert(`📩 Registration code successfully sent to ${contact}! Check your inbox.`);
+            alert(`📩 Access registration token code dispatched to ${contact}. Check mail inbox.`);
             document.getElementById('otp-input-field').classList.remove('hidden');
-            if(otpBtn) { otpBtn.innerText = "RESEND OTP"; otpBtn.disabled = false; }
+            if(otpBtn) { otpBtn.innerText = "RESEND SECURITY OTP"; otpBtn.disabled = false; }
         }
-    }).catch(() => { alert("❌ Network submission failure."); if(otpBtn) otpBtn.disabled = false; });
+    });
 }
 
 document.getElementById('signup-form').addEventListener('submit', (e) => {
@@ -113,7 +106,7 @@ document.getElementById('signup-form').addEventListener('submit', (e) => {
     const password = document.getElementById('reg-password').value;
 
     if (otp !== generatedSignupOTP) {
-        alert("❌ Invalid Verification OTP code parameters.");
+        alert("❌ Registration failure. Verification token code match failed.");
         return;
     }
 
@@ -121,150 +114,131 @@ document.getElementById('signup-form').addEventListener('submit', (e) => {
     localStorage.setItem('malhar_pass', password);
     localStorage.setItem('malhar_name', name);
 
-    alert("🎉 Account Registered Successfully! Switching to Secure Login Panel.");
+    alert("🎉 Account created successfully! Now use your Email & Password to login instantly anytime.");
     switchAuthMode('login');
 });
 
-// 3. SECURE VERIFICATION FOR INSTANT LOGIN TRANSFERS
-function sendLoginOTP() {
+// 3. FAST EMAIL + PASSWORD INSTANT CHECKOUT (NO MORE RETURNING USER OTP LOGS)
+document.getElementById('login-form').addEventListener('submit', (e) => {
+    e.preventDefault();
     const user = document.getElementById('login-username').value;
     const pass = document.getElementById('login-password').value;
     const savedUser = localStorage.getItem('malhar_user');
     const savedPass = localStorage.getItem('malhar_pass');
 
-    // Master Admin Direct Login Core Override Configuration
+    // Master System Admin Bypass Check Configuration
     if (user === "admin" && pass === "malhar@admin") {
-        executeAdminLogin();
+        alert("👑 Welcome Master Admin Aditya Madavi!");
+        localStorage.setItem('current_role', 'admin');
+        document.getElementById('auth-screen').classList.add('hidden');
+        document.getElementById('dashboard-screen').classList.remove('hidden');
+        setupNavigationLinks('admin');
+        loadSection('admin_orders');
         return;
     }
 
     if (user === savedUser && pass === savedPass) {
-        generatedLoginOTP = Math.floor(1000 + Math.random() * 9000).toString();
-        const sendOtpBtn = document.getElementById('btn-login-send-otp');
-        sendOtpBtn.innerText = "Sending Login Code...";
-        sendOtpBtn.disabled = true;
-
-        const formData = new FormData();
-        formData.append("access_key", WEB3FORMS_ACCESS_KEY);
-        formData.append("subject", "🔑 MALHAR SHOP - Secure Login Attempt Code");
-        formData.append("from_name", "Malhar System Security");
-        formData.append("email", user);
-        formData.append("message", `Security Alert: User is logging into Malhar Shop Portal.\n\nYour 4-Digit Secure Login Code is: ${generatedLoginOTP}`);
-
-        fetch("https://api.web3forms.com/submit", { method: "POST", body: formData })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) {
-                alert(`📩 Access authorization token has been sent to ${user}. Check your inbox!`);
-                document.getElementById('login-otp-section').classList.remove('hidden');
-                document.getElementById('btn-login-submit').classList.remove('hidden');
-                sendOtpBtn.classList.add('hidden');
-                document.getElementById('login-username').readOnly = true;
-                document.getElementById('login-password').readOnly = true;
-            }
-        });
+        localStorage.setItem('current_role', 'customer');
+        document.getElementById('auth-screen').classList.add('hidden');
+        document.getElementById('dashboard-screen').classList.remove('hidden');
+        setupNavigationLinks('customer');
+        loadSection('home');
     } else {
-        alert("❌ Invalid Username or Password credentials!");
+        alert("❌ Invalid Username or Access Password configuration!");
     }
-}
-
-document.getElementById('login-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const enteredOTP = document.getElementById('login-otp-input').value;
-
-    if (enteredOTP !== generatedLoginOTP) {
-        alert("❌ Access Denied! Verification token mismatch error.");
-        return;
-    }
-
-    localStorage.setItem('current_role', 'customer');
-    document.getElementById('auth-screen').classList.add('hidden');
-    document.getElementById('dashboard-screen').classList.remove('hidden');
-    setupNavigationLinks('customer');
-    loadSection('home');
 });
 
-function resetLoginFormState() {
-    document.getElementById('login-form').reset();
-    document.getElementById('login-username').readOnly = false;
-    document.getElementById('login-password').readOnly = false;
-    document.getElementById('login-otp-section').classList.add('hidden');
-    document.getElementById('btn-login-submit').classList.add('hidden');
-    const sendOtpBtn = document.getElementById('btn-login-send-otp');
-    if(sendOtpBtn) { sendOtpBtn.classList.remove('hidden'); sendOtpBtn.innerText = "VERIFY & SEND OTP"; sendOtpBtn.disabled = false; }
-}
-
-function executeAdminLogin() {
-    alert("👑 Welcome Master Admin Aditya Madavi! Opening Live Customer Database Records.");
-    localStorage.setItem('current_role', 'admin');
-    document.getElementById('auth-screen').classList.add('hidden');
-    document.getElementById('dashboard-screen').classList.remove('hidden');
-    setupNavigationLinks('admin');
-    loadSection('admin_orders');
-}
-
-// 4. DISPLAY COMPONENT VIEWS DICTIONARY (MATCHED WITH SHOP POSTER ADVERTS)
+// 4. POWERFUL GLOWING LAYOUT TEMPLATES WITH INTEGRATED TICKERS & SMART Mockups
 const sections = {
     home: `
-        <h2>🚀 Our Premium Repairing & Services</h2>
-        <p style="color: var(--text-gray); margin-bottom: 20px;">Quality You Trust, Service You Deserve</p>
+        <!-- LIVE ORDER TICKER NOTIFICATION DEPLOYMENT -->
+        <div class="ticker-wrap">
+            <div class="ticker-content">
+                🔥 Recent Bookings Tracker: Amit Kumar just booked Screen Panel Replacement ... Rajesh M. ordered iPhone 15 Pro Max ... Nilesh Patel processed Advance Fix Token!
+            </div>
+        </div>
+
+        <h2 class="section-title">🚀 Premium Diagnostic Repair Center</h2>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Quality You Trust, Service You Deserve — Premium Malhar Infrastructure</p>
         <div class="grid-container">
             <div class="neon-card">
-                <div class="phone-img-frame"><i class="fas fa-tools"></i></div>
-                <h3>🛠️ Mobile Repairing</h3><p>All types of hardware, motherboard & complex circuit fixes.</p>
-                <button class="btn-neon" style="width:100%; margin-top:10px;" onclick="initiateBookingFlow('Mobile Repairing Service')">Book Repair</button>
+                <div class="phone-img-frame">
+                    <i class="fas fa-tools service-icon-render"></i>
+                </div>
+                <h3>🛠️ Mobile Repairing</h3>
+                <p style="font-size:0.88rem; color:var(--text-gray); margin-top:5px;">Complex circuit engineering, chip-level logic tracks repairs.</p>
+                <button class="btn-neon" style="width:100%; margin-top:20px;" onclick="initiateBookingFlow('Mobile Repairing Service')">Book Repair Entry</button>
             </div>
             <div class="neon-card">
-                <div class="phone-img-frame"><i class="fas fa-mobile"></i></div>
-                <h3>📱 Display Replacement</h3><p>Broken glass or screen damage swap with high-grade components.</p>
-                <button class="btn-neon" style="width:100%; margin-top:10px;" onclick="initiateBookingFlow('Display Replacement Service')">Book Panel Swap</button>
+                <div class="phone-img-frame">
+                    <div class="virtual-phone"><div class="phone-screen-content"><i class="fas fa-tint"></i></div></div>
+                </div>
+                <h3>📱 Display Replacement</h3>
+                <p style="font-size:0.88rem; color:var(--text-gray); margin-top:5px;">Original high-density touch panel glass assembly replacements.</p>
+                <button class="btn-neon" style="width:100%; margin-top:20px;" onclick="initiateBookingFlow('Display Replacement Service')">Book Panel Swap</button>
             </div>
             <div class="neon-card">
-                <div class="phone-img-frame"><i class="fas fa-battery-full"></i></div>
-                <h3>⚡ Battery & Port Repair</h3><p>Long backup replacement cells & high-speed charging ports replacement.</p>
-                <button class="btn-neon" style="width:100%; margin-top:10px;" onclick="initiateBookingFlow('Battery & Charging Port Service')">Book Diagnostics</button>
+                <div class="phone-img-frame">
+                    <i class="fas fa-battery-full service-icon-render" style="color: #00ffaa; text-shadow:0 0 10px #00ffaa;"></i>
+                </div>
+                <h3>⚡ Battery & Ports</h3>
+                <p style="font-size:0.88rem; color:var(--text-gray); margin-top:5px;">High capacity backup power cell installations & superfast ports.</p>
+                <button class="btn-neon" style="width:100%; margin-top:20px;" onclick="initiateBookingFlow('Battery & Charging Port Service')">Book Fix</button>
             </div>
             <div class="neon-card">
-                <div class="phone-img-frame"><i class="fas fa-tv"></i></div>
-                <h3>📺 LED TV & Home Appliances</h3><p>Professional fix tracking for AC, Cooler, Fridge & Washing Machines.</p>
-                <button class="btn-neon" style="width:100%; margin-top:10px;" onclick="initiateBookingFlow('Home Appliance/TV Service')">Book Setup Repair</button>
+                <div class="phone-img-frame">
+                    <i class="fas fa-tv service-icon-render" style="color: #ff0077; text-shadow:0 0 10px #ff0077;"></i>
+                </div>
+                <h3>📺 Smart LED TV Repair</h3>
+                <p style="font-size:0.88rem; color:var(--text-gray); margin-top:5px;">Authorized service for AC, Cooler, Fridge & Washing Machines.</p>
+                <button class="btn-neon" style="width:100%; margin-top:20px;" onclick="initiateBookingFlow('Home Appliance/TV Service')">Book Inspection</button>
             </div>
         </div>
     `,
     mobiles: `
-        <h2>📱 Stock & Online Bookings (Smartphones)</h2>
-        <p style="color: var(--text-gray); margin-bottom: 20px;">All major premium mobile tech devices available with active finance plans</p>
+        <h2 class="section-title">📱 Premium Flagship Smartphone Stock</h2>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Verified authentic tech configurations available with fast approval finance options</p>
         <div class="grid-container">
             <div class="neon-card">
-                <div class="phone-img-frame"><i class="fas fa-mobile-alt" style="color:#d4af37;"></i></div>
-                <h3>iPhone 15 Pro Max</h3><p>Natural Titanium Variant | 256GB Super Retina XDR</p>
-                <span class="badge">Bajaj Finserv EMI Available</span>
+                <div class="phone-img-frame">
+                    <div class="virtual-phone" style="border-color:#d4af37;"><div class="phone-screen-content" style="background:linear-gradient(45deg, #111, #d4af37)"><i class="fab fa-apple"></i></div></div>
+                </div>
+                <h3>iPhone 15 Pro Max</h3>
+                <p style="font-size:0.88rem; color:var(--text-gray); margin-top:5px;">Natural Titanium Structure | Pro Camera Layout | 256GB Elite Variant</p>
+                <span class="badge">Bajaj Finserv EMI Active</span>
                 <button class="btn-neon" style="width:100%;" onclick="initiateBookingFlow('iPhone 15 Pro Max')">Book Order</button>
             </div>
             <div class="neon-card">
-                <div class="phone-img-frame"><i class="fas fa-mobile-alt" style="color:#a442f5;"></i></div>
-                <h3>Samsung S24 Ultra</h3><p>Titanium Gray | 12GB RAM | Galaxy AI Processing Suite</p>
-                <span class="badge">TVS Credit Quick Verification</span>
+                <div class="phone-img-frame">
+                    <div class="virtual-phone" style="border-color:var(--neon-blue);"><div class="phone-screen-content" style="background:linear-gradient(45deg, #03030b, var(--neon-blue))"><i class="fas fa-robot"></i></div></div>
+                </div>
+                <h3>Samsung S24 Ultra</h3>
+                <p style="font-size:0.88rem; color:var(--text-gray); margin-top:5px;">Titanium Gray Armor Frame | Built-in S-Pen Slot | Galaxy Space AI Integration</p>
+                <span class="badge">TVS Credit Verification Option</span>
                 <button class="btn-neon" style="width:100%;" onclick="initiateBookingFlow('Samsung S24 Ultra')">Book Order</button>
             </div>
             <div class="neon-card">
-                <div class="phone-img-frame"><i class="fas fa-mobile-alt" style="color:#00ffaa;"></i></div>
-                <h3>OnePlus 12R</h3><p>Iron Gray Flagship Unit | 16GB RAM + 256GB Storage</p>
-                <span class="badge">Zero Down Payment Scheme</span>
+                <div class="phone-img-frame">
+                    <div class="virtual-phone" style="border-color:#ff3333;"><div class="phone-screen-content" style="background:linear-gradient(45deg, #ff3333, #550000)"><i class="fas fa-infinity"></i></div></div>
+                </div>
+                <h3>OnePlus 12R</h3>
+                <p style="font-size:0.88rem; color:var(--text-gray); margin-top:5px;">Iron Gray Smooth Matte Body | 16GB High Performance RAM Unit</p>
+                <span class="badge">Zero Low Down Payment Layout</span>
                 <button class="btn-neon" style="width:100%;" onclick="initiateBookingFlow('OnePlus 12R')">Book Order</button>
             </div>
         </div>
     `,
     profile: `
-        <h2>📋 My Active Bookings Tracking Status</h2>
-        <p style="color: var(--text-gray); margin-bottom: 20px;">Real-time validation updates for ongoing product requests</p>
+        <h2 class="section-title">📋 Secure Order Tracker System</h2>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Track your token operations state live from database pipeline parameters</p>
         <div class="neon-card" style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr style="color: var(--gold);">
-                        <th>Item/Service Name</th>
-                        <th>Contact Mobile No</th>
-                        <th>Current Status Level</th>
+                        <th>Item Description</th>
+                        <th>Registered Phone No</th>
+                        <th>Txn Ref Note</th>
+                        <th>Verification Status State</th>
                     </tr>
                 </thead>
                 <tbody id="customer-tracker-table"></tbody>
@@ -272,27 +246,27 @@ const sections = {
         </div>
     `,
     about: `
-        <h2>🏪 Store Directory & Authorized Operations</h2>
-        <div class="neon-card" style="margin-top: 20px; max-width:600px; text-align:left;">
-            <h3 style="color:var(--gold); font-family:'Orbitron',sans-serif;"><i class="fas fa-user-tie"></i> Managed By: Aditya Madavi</h3>
-            <p style="margin-top: 15px;"><i class="fas fa-phone-alt" style="color:var(--neon-blue);"></i> <strong>Calling Lines:</strong> +91 8788461756</p>
-            <p><i class="fab fa-whatsapp" style="color: #25d366;"></i> <strong>WhatsApp Support Channel:</strong> +91 9112390404</p>
-            <p style="color: var(--text-gray); font-size:0.85rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:12px; margin-top:15px;"><i class="fas fa-check-double"></i> Verified Premium Quality Center. 100% Customer Satisfaction Rate Guaranteed.</p>
+        <h2 class="section-title">🏪 Store Operational Information</h2>
+        <div class="neon-card" style="margin-top: 25px; max-width:620px; text-align:left;">
+            <h3 style="color:var(--gold); font-family:'Orbitron',sans-serif;"><i class="fas fa-user-tie"></i> Chief Administrator: Aditya Madavi</h3>
+            <p style="margin-top: 18px;"><i class="fas fa-phone-alt" style="color:var(--neon-blue);"></i> <strong>Calling Assistance Lines:</strong> +91 8788461756</p>
+            <p style="margin-top: 5px;"><i class="fab fa-whatsapp" style="color: #25d366;"></i> <strong>WhatsApp Support Node:</strong> +91 9112390404</p>
+            <p style="color: var(--text-gray); font-size:0.88rem; border-top:1px solid rgba(255,255,255,0.08); padding-top:15px; margin-top:20px;"><i class="fas fa-check-double"></i> Verified Premium Quality Center Setup. 100% Satisfaction Rate Guaranteed.</p>
         </div>
     `,
     admin_orders: `
-        <h2>📋 Live Customer Bookings Database (Master Controller View)</h2>
-        <p style="color: var(--text-gray); margin-bottom: 20px;">Manage token parameters, verify transactions data and update statuses</p>
+        <h2 class="section-title">👑 Core Database Master Hub</h2>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Process customer token fee logs, approve queues and alter parameters state values</p>
         <div class="neon-card" style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr style="color: var(--gold);">
-                        <th>Buyer Name</th>
-                        <th>Email ID</th>
-                        <th>Phone Number</th>
-                        <th>Booked Item</th>
-                        <th>Fee Parameters</th>
-                        <th>Operational Actions</th>
+                        <th>Customer</th>
+                        <th>Email / Phone</th>
+                        <th>Requested Unit</th>
+                        <th>Receipt Note</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="admin-orders-table"></tbody>
@@ -316,12 +290,9 @@ function loadSection(sectionName) {
 
     if (sectionName === 'profile') renderCustomerTracker();
     if (sectionName === 'admin_orders') renderAdminOrders();
-    
-    const sidebar = document.getElementById('sidebar');
-    if(sidebar) sidebar.classList.remove('active');
 }
 
-// 5. SECURE UPSTREAM BOOKING PIPELINE CONTROLLERS
+// 5. MASTER UPSTREAM DATA PIPELINE CONTROLLER WITH RECEIPT MANAGEMENT
 let temporaryBookingItemName = null;
 
 function initiateBookingFlow(itemName) {
@@ -329,6 +300,7 @@ function initiateBookingFlow(itemName) {
     const modal = document.getElementById('payment-modal');
     if(modal) {
         document.getElementById('order-phone').value = "";
+        document.getElementById('order-receipt-note').value = "";
         modal.classList.remove('hidden');
     }
 }
@@ -341,13 +313,15 @@ function closePaymentModal() {
 
 function confirmAdvancePayment() {
     const phoneInput = document.getElementById('order-phone').value;
+    const receiptInput = document.getElementById('order-receipt-note').value || "None Provided";
+
     if (!phoneInput || phoneInput.length < 10) {
-        alert("⚠️ Please enter a valid 10-Digit Mobile Phone Number first!");
+        alert("⚠️ Please enter a valid 10-Digit Mobile/WhatsApp Number!");
         return;
     }
 
-    const custName = localStorage.getItem('malhar_name') || "Customer Profile";
-    const custEmail = localStorage.getItem('malhar_user') || "no-email@portal.io";
+    const custName = localStorage.getItem('malhar_name') || "Client Member";
+    const custEmail = localStorage.getItem('malhar_user') || "no-email@portal.in";
 
     let databaseOrders = JSON.parse(localStorage.getItem('malhar_master_orders')) || [];
 
@@ -356,28 +330,29 @@ function confirmAdvancePayment() {
         email: custEmail,
         phone: phoneInput,
         product: temporaryBookingItemName,
-        status: "Pending Admin Verification (Paid ₹50)"
+        receipt: receiptInput,
+        status: "Waiting Verification (Paid ₹50)"
     };
 
     databaseOrders.push(newOrderPayload);
     localStorage.setItem('malhar_master_orders', JSON.stringify(databaseOrders));
 
-    // TRANSMITTING AUTOMATIC SECURE LIVE ALERT NOTIFICATION TO OWNERS EMAIL VIA WEB3FORMS PIPELINE
+    // DYNAMIC TRANSMISSION OF RECEIPT DATA AND DETAILS DIRECT TO ADITYA'S EMAIL
     const adminMailForm = new FormData();
     adminMailForm.append("access_key", WEB3FORMS_ACCESS_KEY);
-    adminMailForm.append("subject", `🚨 NEW ORDER BOOKING REQUEST - ${temporaryBookingItemName}`);
-    adminMailForm.append("from_name", "Malhar Portal Automation");
+    adminMailForm.append("subject", `🚨 NEW MALHAR BOOKING LOGGED - Ref: ${receiptInput}`);
+    adminMailForm.append("from_name", "Malhar Automated Notification Node");
     adminMailForm.append("email", "onlainajay@gmail.com"); 
-    adminMailForm.append("message", `New Secure Booking Entry Created!\n\nCustomer Name: ${custName}\nRegistered Email ID: ${custEmail}\nActive Phone Number: ${phoneInput}\nItem Booked: ${temporaryBookingItemName}\nAdvance Status: ₹50 Token Payment Registered.\n\nPlease log in to the system via Master Admin parameters to review or approve this ticket payload.`);
+    adminMailForm.append("message", `New Secure Booking Registered!\n\nCustomer Name: ${custName}\nMail ID: ${custEmail}\nPhone / WhatsApp: ${phoneInput}\nBooked Unit: ${temporaryBookingItemName}\n\n[RECEIPT DATA NOTE]: ${receiptInput}\nToken Parameter Status: ₹50 Advance Transferred.`);
 
     fetch("https://api.web3forms.com/submit", { method: "POST", body: adminMailForm });
 
-    alert(`🎉 Booking Successful! Your order request data for ${temporaryBookingItemName} along with transaction records have been sent to Admin Aditya Madavi.`);
+    alert(`🎉 Booking Parameters Dispatched! Your reference confirmation state for ${temporaryBookingItemName} is now live.`);
     closePaymentModal();
     loadSection('profile');
 }
 
-// 6. RENDER TRACKING VIEWS DATA INJECTIONS
+// 6. STORAGE PIPELINE VISUAL RENDERS
 function renderCustomerTracker() {
     const tableBody = document.getElementById('customer-tracker-table');
     if(!tableBody) return;
@@ -387,7 +362,7 @@ function renderCustomerTracker() {
     const profileOrders = databaseOrders.filter(o => o.email === currentEmail);
 
     if (profileOrders.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="3" style="padding: 20px; text-align: center; color: var(--text-gray);">No live active bookings under this session parameters. 📭</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="4" style="padding: 20px; text-align: center; color: var(--text-gray);">No live parameters tracked under this account logs. 📭</td></tr>`;
         return;
     }
 
@@ -395,9 +370,10 @@ function renderCustomerTracker() {
     profileOrders.forEach(order => {
         tableBody.innerHTML += `
             <tr>
-                <td style="font-weight: bold; color:var(--text-white);">${order.product}</td>
-                <td style="color: var(--neon-blue); font-weight:500;">${order.phone}</td>
-                <td><span style="color: ${order.status.includes('Confirmed') ? '#00ff88' : '#ffaa00'}; font-weight:bold;">${order.status}</span></td>
+                <td style="font-weight: bold;">${order.product}</td>
+                <td style="color: var(--neon-blue);">${order.phone}</td>
+                <td style="color: var(--text-gray); font-size:0.85rem;">${order.receipt || 'None'}</td>
+                <td><span style="color: ${order.status.includes('Verified') ? '#00ff88' : '#ffaa00'}; font-weight:bold;">${order.status}</span></td>
             </tr>
         `;
     });
@@ -410,7 +386,7 @@ function renderAdminOrders() {
     let databaseOrders = JSON.parse(localStorage.getItem('malhar_master_orders')) || [];
 
     if (databaseOrders.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="6" style="padding: 20px; text-align: center; color: var(--text-gray);">Database records storage pipeline is empty. 📭</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="6" style="padding: 20px; text-align: center; color: var(--text-gray);">No active customer tickets saved inside cache pipeline. 📭</td></tr>`;
         return;
     }
 
@@ -418,14 +394,14 @@ function renderAdminOrders() {
     databaseOrders.forEach((order, idx) => {
         tableBody.innerHTML += `
             <tr>
-                <td>${order.name}</td>
-                <td style="color: var(--text-gray); font-size:0.85rem;">${order.email}</td>
-                <td style="color: var(--neon-blue); font-weight:500;">${order.phone}</td>
+                <td><strong>${order.name}</strong></td>
+                <td style="font-size:0.85rem; line-height:1.4;">${order.email}<br><span style="color:var(--neon-blue); font-weight:bold;">${order.phone}</span></td>
                 <td style="color: var(--gold); font-weight:bold;">${order.product}</td>
+                <td style="color: #a5a5b5; font-size: 0.85rem; max-width:120px; overflow:hidden;">${order.receipt || 'None'}</td>
                 <td><span style="color:#00ff88; font-weight:bold;">${order.status}</span></td>
                 <td style="display:flex; gap:8px;">
-                    <button onclick="approveOrder(${idx})" style="background:#00cc66; border:none; color:white; padding:6px 10px; cursor:pointer; border-radius:4px; font-weight:bold; font-family:'Poppins'; font-size:0.8rem;">Approve</button>
-                    <button onclick="clearAdminEntry(${idx})" style="background:#ff3333; border:none; color:white; padding:6px 10px; cursor:pointer; border-radius:4px; font-family:'Poppins'; font-size:0.8rem;">Delete</button>
+                    <button onclick="approveOrder(${index=idx})" style="background:#00cc66; border:none; color:white; padding:6px 12px; cursor:pointer; border-radius:5px; font-weight:bold;">Approve</button>
+                    <button onclick="clearAdminEntry(${index=idx})" style="background:#ff3333; border:none; color:white; padding:6px 12px; cursor:pointer; border-radius:5px;">Delete</button>
                 </td>
             </tr>
         `;
@@ -436,12 +412,12 @@ function approveOrder(index) {
     let databaseOrders = JSON.parse(localStorage.getItem('malhar_master_orders')) || [];
     databaseOrders[index].status = "Booking Verified & Confirmed ✅";
     localStorage.setItem('malhar_master_orders', JSON.stringify(databaseOrders));
-    alert("🚀 Order State Verified! Customer tracking dashboard parameter has been updated instantly.");
+    alert("🚀 Token parameter update verified successfully!");
     renderAdminOrders();
 }
 
 function clearAdminEntry(index) {
-    if(confirm("Permanently delete this customer order data payload entry?")) {
+    if(confirm("Purge selected record parameter from system?")) {
         let databaseOrders = JSON.parse(localStorage.getItem('malhar_master_orders')) || [];
         databaseOrders.splice(index, 1);
         localStorage.setItem('malhar_master_orders', JSON.stringify(databaseOrders));
@@ -449,16 +425,10 @@ function clearAdminEntry(index) {
     }
 }
 
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    if(sidebar) sidebar.classList.toggle('active');
-}
-
 function logout() {
-    if (confirm("Terminate active session token dashboard visibility?")) {
+    if (confirm("Terminate user core tracking terminal window visibility?")) {
         document.getElementById('dashboard-screen').classList.add('hidden');
         document.getElementById('auth-screen').classList.remove('hidden');
-        resetLoginFormState();
         localStorage.removeItem('current_role');
     }
 }
